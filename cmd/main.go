@@ -39,6 +39,9 @@ func main() {
     // Currency conversion route
     api.HandleFunc("/convert-currency", controllers.ConvertCurrency).Methods("POST")
     
+    // Stripe payment route
+    api.HandleFunc("/create-payment", controllers.CreatePayment).Methods("POST")
+    
     log.Println("Server started at :8080")
     log.Fatal(http.ListenAndServe(":8080", router))
 }
