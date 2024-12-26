@@ -2,12 +2,20 @@ package services
 
 import (
     "encoding/json"
-    "net/http"
     "errors"
+    "net/http"
+   // "paypal-clone/models"
+    "time"
 )
 
 func GetExchangeRate(baseCurrency string, targetCurrency string) (float64, error) {
-    // Пример запроса к публичному API обмена валют (например, ExchangeRatesAPI или Fixer)
+    cacheKey := "exchange_rate_" + baseCurrency + "_" + targetCurrency
+    var cachedRate float64
+
+    if err := GetCache(cacheKey, &cachedRate); err == nil {
+        return cachedRate, nil
+    }
+
     apiURL := "https://api.exchangerate-api.com/v4/latest/" + baseCurrency
 
     resp, err := http.Get(apiURL)
@@ -29,6 +37,11 @@ func GetExchangeRate(baseCurrency string, targetCurrency string) (float64, error
     rate, ok := rates[targetCurrency].(float64)
     if !ok {
         return 0, errors.New("rate not found for target currency")
+    }
+
+    // Кэширование обменного курса на 1 час
+    if err := SetCache(cacheKey, rate, time.Hour); err != nil {
+        return 0, err
     }
 
     return rate, nil

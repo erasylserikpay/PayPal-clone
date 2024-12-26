@@ -5,6 +5,7 @@ import (
     "net/http"
     "paypal-clone/controllers"
     "paypal-clone/db"
+    "paypal-clone/cache"
     "paypal-clone/middleware"
     "github.com/gorilla/mux"
 )
@@ -13,6 +14,7 @@ func main() {
     router := mux.NewRouter()
     
     db.Connect()
+    cache.Connect()
 
     // Auth routes
     router.HandleFunc("/register", controllers.Register).Methods("POST")
